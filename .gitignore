@@ -1,0 +1,10 @@
+build/
+bin/
+*.obj
+*.d
+loader/**
+.vscode/**
+*.iso
+*.exe
+*.lib
+.DS_Store
