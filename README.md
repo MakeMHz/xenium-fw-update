@@ -31,6 +31,12 @@ The xenium-fw-update project aims to fix long-standing issues since its release.
 ## Installation
 Download the latest release, copy xenium-os-update.xbe to your Xbox, and launch.
 
+Note: Ensure that your Xenium Chip runs Firmware Version 2.3.1 before using the updater.
+
+## Troubleshooting
+
+- Question: Updater shows error message: Unknown XeniumOS version detected
+- Answer: Update your Xenium Modchip with official Firmware 2.3.1, then run this tool again.
 
 ## Licensing
 xenium-fw-update is free and open source. Please respect the licenses available in their respective folders.
