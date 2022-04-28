@@ -21,8 +21,19 @@
 #include <stdint.h>
 #include <string.h>
 #include "xenium.h"
+
 #ifdef NXDK
-#include <hal/io.h>
+static unsigned char IoInputByte(unsigned short address)
+{
+	unsigned char v;
+	__asm__ __volatile__ ("inb %w1,%0":"=a" (v):"Nd" (address));
+	return v;
+}
+
+static void IoOutputByte(unsigned short address, unsigned char value)
+{
+	__asm__ __volatile__ ("outb %b0,%w1": :"a" (value), "Nd" (address));
+}
 #else
 static uint8_t lpc_mem[1024 * 1024 * 16];
 static uintptr_t LPC_MEMORY_BASE;
