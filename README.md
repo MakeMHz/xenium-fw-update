@@ -24,7 +24,18 @@ Released in early 2004, XeniumOS is the installed operating system on the Xenium
 
 The xenium-fw-update project aims to fix long-standing issues since its release. Unfortunately, the source code for the XOS has never been released and this project is fully based on reverse-engineered binaries.
 
-## Features
+## Change Log
+
+### v2.3.4
+  * New default skin
+  * All self-destruct routines have been completely removed. (Found an additional one since the last update)
+  * Native XboxHD+ support. (Requires XboxHD+ FW 2.1.9)
+  * Native XboxHD+ QSB+ support (Requires XboxHD+ FW 2.1.9)
+  * Disables 'skin' support to prevent black screen on boot if drives fail to initialize
+  * Add 'Remove BIOS' option to WebUI
+  * Various patch cleanup/tweaks.
+
+### v2.3.2
   * Fixes video output 1.6 revision systems when using component video.
   * Removes self-destruct logic. XOS performs device ID checks during boot, and if fails erases itself. In rare cases, this can happen on valid hardware.
 
