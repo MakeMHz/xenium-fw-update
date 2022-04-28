@@ -49,11 +49,13 @@ TTF_Font *gFontSmall = NULL;
 
 bool running = true;
 
-uint8_t *bank_xeniumos   = NULL;
-uint8_t *bank_bootloader = NULL;
+uint8_t *bank_xeniumos      = NULL;
+uint8_t *bank_xeniumos_data = NULL;
+uint8_t *bank_bootloader    = NULL;
 
-uint32_t bank_xeniumos_crc32   = 0;
-uint32_t bank_bootloader_crc32 = 0;
+uint32_t bank_xeniumos_crc32      = 0;
+uint32_t bank_xeniumos_data_crc32 = 0;
+uint32_t bank_bootloader_crc32    = 0;
 
 //
 Version *matched_version = NULL;
@@ -164,8 +166,9 @@ int main(void)
     console = new Console(&render, 86, 146);
 
     // Allocate memory for banks
-    bank_xeniumos   = (uint8_t *)malloc(XENIUM_BANK_XENIUMOS_SIZE);
-    bank_bootloader = (uint8_t *)malloc(XENIUM_BANK_BOOTLOADER_SIZE);
+    bank_xeniumos      = (uint8_t *)malloc(XENIUM_BANK_XENIUMOS_SIZE);
+    bank_xeniumos_data = (uint8_t *)malloc(sizeof(patch_xeniumos_data));
+    bank_bootloader    = (uint8_t *)malloc(XENIUM_BANK_BOOTLOADER_SIZE);
 
     while (running) {
         // Check for events
@@ -289,7 +292,7 @@ int main(void)
 
             // NOTE: We're not touching the user config.
             for (uint32_t sector = XENIUM_BANK_XENIUM_DATA_OFFSET;
-                sector < XENIUM_BANK_XENIUM_DATA_OFFSET + (227 * 1024); sector += XENIUM_FLASH_SECTOR_SIZE)
+                sector < XENIUM_BANK_XENIUM_DATA_OFFSET + sizeof(patch_xeniumos_data); sector += XENIUM_FLASH_SECTOR_SIZE)
             {
                 xenium_start_sector_erase(sector);
                 do { Sleep(1000); } while(xenium_flash_busy());
@@ -309,7 +312,39 @@ int main(void)
                 while(xenium_flash_busy()) { ;; }
             }
 
-            state = UpdateState::Done;
+            state = UpdateState::ReadVerificationBootloader;
+            break;
+        // Read in Bootloader for Verification
+        case UpdateState::ReadVerificationBootloader:
+            console->printf("Reading Flash - Bootloader");
+
+            xenium_set_bank(XENIUM_BANK_BOOTLOADER);
+            xenium_flash_read_stream(0, bank_bootloader, XENIUM_BANK_BOOTLOADER_SIZE);
+
+            state = UpdateState::ReadVerificationXeniumData;
+            break;
+        // Read in XOS Data for Verification
+        case UpdateState::ReadVerificationXeniumData:
+            console->printf("Reading Flash - XOS Data");
+
+            xenium_set_bank(XENIUM_BANK_RECOVERY);
+            xenium_flash_read_stream(0, bank_xeniumos_data, sizeof(patch_xeniumos_data));
+
+            state = UpdateState::CalculateVerificationCRCs;
+            break;
+        // Calculate CRC32s for Verification
+        case UpdateState::CalculateVerificationCRCs:
+            console->printf("Calculating CRC32s");
+
+            bank_bootloader_crc32    = CRC_result(CRC_add(CRC_init(), (uint8_t const *)bank_bootloader, XENIUM_BANK_BOOTLOADER_SIZE));
+            bank_xeniumos_data_crc32 = CRC_result(CRC_add(CRC_init(), (uint8_t const *)bank_xeniumos_data, sizeof(patch_xeniumos_data)));
+
+            if(bank_bootloader_crc32 == 0xD8A29B51 && bank_xeniumos_data_crc32 == 0xB39AAC57) {
+                state = UpdateState::Done;
+            } else {
+                console->printf("Flash verification failed");
+                state = UpdateState::EraseBootloader;
+            }
             break;
         //
         case UpdateState::Done:

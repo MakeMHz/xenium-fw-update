@@ -22,6 +22,11 @@ enum UpdateState {
     EraseXOS,
     ProgramXOS,
 
+    ReadVerificationBootloader,
+    ReadVerificationXeniumData,
+
+    CalculateVerificationCRCs,
+
     //
     Done,
     DoneError,
