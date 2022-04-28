@@ -317,7 +317,7 @@ int main(void)
             break;
         case UpdateState::DoneError:
             console->printf("An error has occured! Please");
-            console->printf("refeer to URL below for more");
+            console->printf("reefer to URL below for more");
             console->printf("information.");
             console->printf("makemhz.com/xos-upgrade-help");
             state = UpdateState::Exit;
