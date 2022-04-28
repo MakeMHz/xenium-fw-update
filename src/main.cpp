@@ -241,6 +241,9 @@ int main(void)
                 console->printf("Found XeniumOS");
                 console->printf("  %s", matched_version->name);
                 state = UpdateState::EraseBootloader;
+            } else if(bank_xeniumos_crc32 == 0x0A3D160A && bank_bootloader_crc32 == 0xD8A29B51) {
+                console->printf("XeniumOS already updated");
+                state = UpdateState::Done;
             } else {
                 console->printf("Unknown XeniumOS version detected");
                 console->printf("  X: 0x%08x B: 0x%08x", bank_xeniumos_crc32, bank_bootloader_crc32);
