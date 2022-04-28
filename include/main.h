@@ -19,6 +19,9 @@ enum UpdateState {
     EraseBootloader,
     ProgramBootloader,
 
+    EraseXOS,
+    ProgramXOS,
+
     //
     Done,
     DoneError,

@@ -57,6 +57,7 @@
 
 #define XENIUM_BANK_BOOTLOADER_OFFSET  0x180000
 #define XENIUM_BANK_XENIUMOS_OFFSET    0x100000
+#define XENIUM_BANK_XENIUM_DATA_OFFSET 0x1C0000
 
 void xenium_set_bank(uint8_t bank);
 void xenium_set_led(uint8_t led);

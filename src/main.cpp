@@ -183,7 +183,7 @@ int main(void)
             break;
         case UpdateState::WelcomeScreen:
             console->printf("Xenium Firmware Update");
-            console->printf("Update Version: %d.%d.%d", 2, 3, 2);
+            console->printf("Update Version: %d.%d.%d", 2, 3, 4);
             console->printf("------------------------------");
 
             state = UpdateState::CheckXeniumDetected;
@@ -249,7 +249,7 @@ int main(void)
             break;
         // Erase bootloader
         case UpdateState::EraseBootloader:
-            console->printf("Erasing Bootloader");
+            console->printf("Erasing  Bootloader");
 
             xenium_set_bank(XENIUM_BANK_BOOTLOADER);
             xenium_flash_reset();
@@ -272,6 +272,37 @@ int main(void)
 
             for (uint32_t i = 0; i < sizeof(patch_bootloader); i++) {
                 xenium_start_flash_program_byte(XENIUM_BANK_BOOTLOADER_OFFSET + i, patch_bootloader[i]);
+                while(xenium_flash_busy()) { ;; }
+            }
+
+            state = UpdateState::EraseXOS;
+            break;
+        // Erase XOS
+        case UpdateState::EraseXOS:
+            console->printf("Erasing  XOS Data");
+
+            xenium_set_bank(XENIUM_BANK_RECOVERY);
+            xenium_flash_reset();
+
+            // NOTE: We're not touching the user config.
+            for (uint32_t sector = XENIUM_BANK_XENIUM_DATA_OFFSET;
+                sector < XENIUM_BANK_XENIUM_DATA_OFFSET + (227 * 1024); sector += XENIUM_FLASH_SECTOR_SIZE)
+            {
+                xenium_start_sector_erase(sector);
+                do { Sleep(1000); } while(xenium_flash_busy());
+            }
+
+            state = UpdateState::ProgramXOS;
+            break;
+        // Program XOS
+        case UpdateState::ProgramXOS:
+            console->printf("Flashing XOS Data");
+
+            xenium_set_bank(XENIUM_BANK_RECOVERY);
+            xenium_flash_reset();
+
+            for (uint32_t i = 0; i < sizeof(patch_xeniumos_data); i++) {
+                xenium_start_flash_program_byte(XENIUM_BANK_XENIUM_DATA_OFFSET + i, patch_xeniumos_data[i]);
                 while(xenium_flash_busy()) { ;; }
             }
 
