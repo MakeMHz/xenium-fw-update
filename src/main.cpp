@@ -231,8 +231,7 @@ int main(void)
         case UpdateState::MatchVersion:
             // Check to see this matches any known values
             for (uint32_t i = 0; i < (sizeof(XeniumVersions) / sizeof(Version)); i++) {
-                if (XeniumVersions[i].crc32_bootloader == bank_bootloader_crc32 &&
-                    XeniumVersions[i].crc32_bootloader == bank_bootloader_crc32) {
+                if (XeniumVersions[i].crc32_bootloader == bank_bootloader_crc32) {
                     // Store reference
                     matched_version = (Version *)&XeniumVersions[i];
                     break;
