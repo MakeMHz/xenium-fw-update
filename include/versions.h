@@ -7,4 +7,4 @@ typedef struct Version {
     uint32_t crc32_bootloader;
 } Version_t;
 
-extern const Version XeniumVersions[3];
+extern const Version XeniumVersions[5];

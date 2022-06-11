@@ -186,7 +186,7 @@ int main(void)
             break;
         case UpdateState::WelcomeScreen:
             console->printf("Xenium Firmware Update");
-            console->printf("Update Version: %d.%d.%d", 2, 3, 4);
+            console->printf("Update Version: %d.%d.%d", 2, 3, 5);
             console->printf("------------------------------");
 
             state = UpdateState::CheckXeniumDetected;
@@ -241,9 +241,10 @@ int main(void)
             // Check if have match
             if(matched_version) {
                 console->printf("Found XeniumOS");
+                console->printf("  X: 0x%08x B: 0x%08x", bank_xeniumos_crc32, bank_bootloader_crc32);
                 console->printf("  %s", matched_version->name);
                 state = UpdateState::EraseBootloader;
-            } else if(bank_xeniumos_crc32 == 0x0A3D160A && bank_bootloader_crc32 == 0xD8A29B51) {
+            } else if(bank_xeniumos_crc32 == 0x0A3D160A && bank_bootloader_crc32 == 0xC1CDE2EF) {
                 console->printf("XeniumOS already updated");
                 state = UpdateState::Done;
             } else {
@@ -338,7 +339,7 @@ int main(void)
             bank_bootloader_crc32    = CRC_result(CRC_add(CRC_init(), (uint8_t const *)bank_bootloader, XENIUM_BANK_BOOTLOADER_SIZE));
             bank_xeniumos_data_crc32 = CRC_result(CRC_add(CRC_init(), (uint8_t const *)bank_xeniumos_data, sizeof(patch_xeniumos_data)));
 
-            if(bank_bootloader_crc32 == 0xD8A29B51 && bank_xeniumos_data_crc32 == 0xB39AAC57) {
+            if(bank_bootloader_crc32 == 0xC1CDE2EF && bank_xeniumos_data_crc32 == 0xB39AAC57) {
                 state = UpdateState::Done;
             } else {
                 console->printf("Flash verification failed");
