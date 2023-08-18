@@ -36,7 +36,7 @@
 #include "assets.h"
 #include "common.h"
 #include "console.h"
-#include "crc32.h"
+#include "crc.h"
 #include "debug.h"
 #include "main.h"
 #include "xenium.h"
