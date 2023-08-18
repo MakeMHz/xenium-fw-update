@@ -278,7 +278,6 @@ int main(void)
 
             for (uint32_t i = 0; i < sizeof(patch_bootloader); i++) {
                 xenium_start_flash_program_byte(XENIUM_BANK_BOOTLOADER_OFFSET + i, patch_bootloader[i]);
-                while(xenium_flash_busy()) { ;; }
             }
 
             state = UpdateState::EraseXOS;
@@ -309,7 +308,6 @@ int main(void)
 
             for (uint32_t i = 0; i < sizeof(patch_xeniumos_data); i++) {
                 xenium_start_flash_program_byte(XENIUM_BANK_XENIUM_DATA_OFFSET + i, patch_xeniumos_data[i]);
-                while(xenium_flash_busy()) { ;; }
             }
 
             state = UpdateState::ReadVerificationBootloader;
