@@ -131,6 +131,7 @@ void xenium_start_flash_program_byte(uint32_t address, uint8_t data)
     lpc_send_byte(0x5555, 0x55);
     lpc_send_byte(0xAAAA, 0xA0);
     lpc_send_byte(address, data);
+    while (xenium_flash_read_byte(address) != data);
 }
 
 uint8_t xenium_is_detected()
